@@ -189,6 +189,7 @@ int pair_files(char *left_fn, char *right_fn, struct options *opt) {
 
         // make a copy of the current line so we can print it out later.
         char *headerline = dupstr(line);
+        char *parsedheaderline = dupstr(line);
 
         line[strcspn(line, "\n")] = '\0';
         line[strcspn(line, " ")] = '\0';
@@ -200,6 +201,10 @@ int pair_files(char *left_fn, char *right_fn, struct options *opt) {
         if ('/' == lastbutone || '_' == lastbutone || '.' == lastbutone)
             if ('1' == lastchar || '2' == lastchar || 'f' == lastchar ||  'r' == lastchar)
                 line[strlen(line)-1] = '\0';
+                if (opt->match_paired_headers) {
+                    parsedheaderline[strcspn(parsedheaderline, " ")] = '\0';
+                    parsedheaderline[strlen(line)-1] = '\n'; 
+                } 
 
         // now see if we have the mate pair
         unsigned hashval = hash(line) % opt->tablesize;
@@ -217,13 +222,23 @@ int pair_files(char *left_fn, char *right_fn, struct options *opt) {
             // we have a match.
             // lets process the left file
             fseek(lfp, posn, SEEK_SET);
-            left_paired_counter++;
-            for (int i=0; i<=3; i++) {
+            // if match_paired_headers, print stripped header 
+            if (opt->match_paired_headers) {
+                aline = fgets(line, MAXLINELEN, lfp);
+                fprintf(left_paired, "%s", parsedheaderline);
+            } else{ 
                 aline = fgets(line, MAXLINELEN, lfp);
                 fprintf(left_paired, "%s", line);
             }
+            // print read sequence and quality 
+            left_paired_counter++;
+            for (int i=0; i<=2; i++) {
+                aline = fgets(line, MAXLINELEN, lfp);
+                fprintf(left_paired, "%s", line);
+                }
+
             // now process the right file
-            fprintf(right_paired, "%s", headerline);
+            fprintf(right_paired, "%s", parsedheaderline);
             right_paired_counter++;
             for (int i=0; i<=2; i++) {
                 aline = fgets(line, MAXLINELEN, rfp);

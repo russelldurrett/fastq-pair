@@ -30,6 +30,7 @@ int main(int argc, char* argv[]) {
     opt->tablesize = 100003;
     opt->print_table_counts = false;
     opt->verbose = false;
+    opt->match_paired_headers = false; 
     char *left_file = NULL;
     char *right_file = NULL;
 
@@ -43,6 +44,8 @@ int main(int argc, char* argv[]) {
             opt->print_table_counts = true;
         else if (strcmp(argv[i], "-v") == 0)
             opt->verbose = true;
+        else if (strcmp(argv[i], "-m") == 0)
+            opt->match_paired_headers = true;
         else if (access(argv[i], F_OK) != -1 && left_file == NULL)
             left_file = argv[i];
         else if (access(argv[i], F_OK) != -1 && right_file == NULL)
@@ -75,6 +78,7 @@ void help(char *s) {
     fprintf(stdout, "\n%s [options] [fastq file 1] [fastq file 2]\n", s);
     fprintf(stdout, "\nOPTIONS\n-t table size (default 100003)\n");
     fprintf(stdout, "-p print the number of elements in each bucket in the table\n");
+    fprintf(stdout, "-m rename headers of paired reads to match identically\n");
     fprintf(stdout, "-v verbose output. This is mainly for debugging\n");
 
 }
