@@ -202,7 +202,7 @@ int pair_files(char *left_fn, char *right_fn, struct options *opt) {
             if ('1' == lastchar || '2' == lastchar || 'f' == lastchar ||  'r' == lastchar)
                 line[strlen(line)-1] = '\0';
                 if (opt->match_paired_headers) {
-                    parsedheaderline[strcspn(parsedheaderline, " ")] = '\0';
+                    parsedheaderline[strcspn(parsedheaderline, " ")-1] = '\0';
                     parsedheaderline[strlen(line)-1] = '\n'; 
                 } 
 
